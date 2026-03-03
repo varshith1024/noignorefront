@@ -10,7 +10,7 @@ function Search() {
   const search = async () => {
     try {
       const res = await axios.get(
-        `http://localhost:5000/api/auth/search/${username}`,
+        `https://noignore.onrender.com/api/auth/search/${username}`,
         {
           headers: { Authorization: token }
         }
@@ -25,7 +25,7 @@ function Search() {
   const sendRequest = async (receiverId) => {
     try {
       await axios.post(
-        `http://localhost:5000/api/auth/send-request/${receiverId}`,
+        `https://noignore.onrender.com/api/auth/send-request/${receiverId}`,
         {},
         {
           headers: { Authorization: token }

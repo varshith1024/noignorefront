@@ -36,7 +36,7 @@ function Dashboard() {
   const fetchRequests = async () => {
     try {
       const res = await axios.get(
-        "http://localhost:5000/api/auth/pending-requests",
+        "hhttps://noignore.onrender.com/api/auth/pending-requests",
         {
           headers: { Authorization: token }
         }
@@ -50,7 +50,7 @@ function Dashboard() {
   const fetchFriends = async () => {
     try {
       const res = await axios.get(
-        "http://localhost:5000/api/auth/friends",
+        "https://noignore.onrender.com/api/auth/friends",
         {
           headers: { Authorization: token }
         }
@@ -64,7 +64,7 @@ function Dashboard() {
   const acceptRequest = async (id) => {
     try {
       await axios.post(
-        `http://localhost:5000/api/auth/accept-request/${id}`,
+        `https://noignore.onrender.com/api/auth/accept-request/${id}`,
         {},
         {
           headers: { Authorization: token }

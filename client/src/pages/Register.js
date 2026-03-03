@@ -11,7 +11,7 @@ function Register() {
 
   const register = async () => {
     try {
-      await axios.post("http://localhost:5000/api/auth/register", {
+      await axios.post("https://noignore.onrender.com/api/auth/register", {
         username,
         email,
         password

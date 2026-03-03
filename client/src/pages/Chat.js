@@ -56,7 +56,7 @@ function Chat() {
   const fetchMessages = async () => {
     try {
       const res = await axios.get(
-        `http://localhost:5000/api/auth/messages/${friendId}`,
+        `https://noignore.onrender.com/api/auth/messages/${friendId}`,
         {
           headers: { Authorization: token }
         }
@@ -86,7 +86,7 @@ function Chat() {
 
     try {
       await axios.post(
-        `http://localhost:5000/api/auth/send-message/${friendId}`,
+        `https://noignore.onrender.com/api/auth/send-message/${friendId}`,
         { content: newMessage },
         {
           headers: { Authorization: token }
