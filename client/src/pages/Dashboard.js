@@ -14,19 +14,17 @@ function Dashboard() {
 
   const userId = JSON.parse(atob(token.split(".")[1])).userId;
 
-  /* =========================
-     JOIN SOCKET ROOM
-  ========================== */
   useEffect(() => {
     socket.emit("join", userId);
 
-    socket.on("ignoreWarning", (data) => {
-      console.log("Ignore warning received");
+    const handleIgnore = (data) => {
       setNotification(data.message);
-    });
+    };
+
+    socket.on("ignoreWarning", handleIgnore);
 
     return () => {
-      socket.off("ignoreWarning");
+      socket.off("ignoreWarning", handleIgnore);
     };
   }, [userId]);
 
@@ -36,7 +34,7 @@ function Dashboard() {
   const fetchRequests = useCallback(async () => {
     try {
       const res = await axios.get(
-        "hhttps://noignore.onrender.com/api/auth/pending-requests",
+        "https://noignore.onrender.com/api/auth/pending-requests", // ✅ FIXED
         {
           headers: { Authorization: token }
         }
@@ -45,7 +43,7 @@ function Dashboard() {
     } catch (err) {
       console.log(err);
     }
-  });
+  }, [token]);   // ✅ REQUIRED
 
   const fetchFriends = useCallback(async () => {
     try {
@@ -59,26 +57,7 @@ function Dashboard() {
     } catch (err) {
       console.log(err);
     }
-  });
-
-  const acceptRequest = async (id) => {
-    try {
-      await axios.post(
-        `https://noignore.onrender.com/api/auth/accept-request/${id}`,
-        {},
-        {
-          headers: { Authorization: token }
-        }
-      );
-
-      setNotification("Friend request accepted 😤");
-
-      fetchRequests();
-      fetchFriends();
-    } catch (err) {
-      setNotification("Failed to accept request ❌");
-    }
-  };
+  }, [token]);   // ✅ REQUIRED
 
   useEffect(() => {
     fetchRequests();
@@ -93,69 +72,21 @@ function Dashboard() {
 
   return (
     <div className="container mt-5">
-
-      {/* 🔔 Toast Notification */}
       <ToastNotification message={notification} />
 
       <div className="card p-4 shadow">
         <h3 className="mb-3">Welcome to NoIgnore 😤</h3>
 
-        <div className="mb-3">
-          <button
-            className="btn btn-primary me-2"
-            onClick={() => navigate("/search")}
-          >
-            Search Users
-          </button>
+        <button className="btn btn-danger mb-3" onClick={logout}>
+          Logout
+        </button>
 
-          <button
-            className="btn btn-danger"
-            onClick={logout}
-          >
-            Logout
-          </button>
-        </div>
-
-        <hr />
-
-        {/* Pending Requests */}
-        <h5>Pending Friend Requests</h5>
-
-        {requests.length === 0 && (
-          <p className="text-muted">No pending requests</p>
-        )}
-
-        <ul className="list-group mb-4">
-          {requests.map((req) => (
-            <li
-              key={req.id}
-              className="list-group-item d-flex justify-content-between align-items-center"
-            >
-              {req.sender.username}
-              <button
-                className="btn btn-success btn-sm"
-                onClick={() => acceptRequest(req.id)}
-              >
-                Accept
-              </button>
-            </li>
-          ))}
-        </ul>
-
-        <hr />
-
-        {/* Friends List */}
         <h5>Your Friends</h5>
-
-        {friends.length === 0 && (
-          <p className="text-muted">No friends yet</p>
-        )}
-
         <ul className="list-group">
           {friends.map((friend) => (
             <li
               key={friend.id}
-              className="list-group-item d-flex justify-content-between align-items-center"
+              className="list-group-item d-flex justify-content-between"
             >
               {friend.username}
               <button
@@ -167,7 +98,6 @@ function Dashboard() {
             </li>
           ))}
         </ul>
-
       </div>
     </div>
   );

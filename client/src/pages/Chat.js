@@ -1,9 +1,7 @@
-import React, { useEffect,useRef,useCallback, useState } from "react";
+import React, { useEffect, useRef, useCallback, useState } from "react";
 import axios from "axios";
 import { useParams, useNavigate } from "react-router-dom";
 import socket from "../socket";
-
-
 
 function Chat() {
   const { friendId } = useParams();
@@ -14,39 +12,31 @@ function Chat() {
 
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
-
   const bottomRef = useRef(null);
 
   /* =========================
      JOIN ROOM
   ========================== */
   useEffect(() => {
-  socket.emit("join", userId);
+    socket.emit("join", userId);
 
-  socket.on("ignoreWarning", (data) => {
-    alert(data.message);
-  });
-
-  return () => {
-    socket.off("ignoreWarning");
-  };
-}, [userId]);
+    return () => {
+      socket.off("receiveMessage");
+    };
+  }, [userId]);
 
   /* =========================
      RECEIVE MESSAGE
   ========================== */
   useEffect(() => {
-    socket.on("receiveMessage", (data) => {
+    const handleReceive = (data) => {
       setMessages((prev) => [...prev, data]);
-    });
+    };
 
-    socket.on("ignoreWarning", (data) => {
-      alert(data.message);
-    });
+    socket.on("receiveMessage", handleReceive);
 
     return () => {
-      socket.off("receiveMessage");
-      socket.off("ignoreWarning");
+      socket.off("receiveMessage", handleReceive);
     };
   }, []);
 
@@ -65,7 +55,7 @@ function Chat() {
     } catch (err) {
       console.log(err);
     }
-  });
+  }, [friendId, token]);   // ✅ REQUIRED
 
   useEffect(() => {
     fetchMessages();
@@ -115,25 +105,9 @@ function Chat() {
       <div className="card shadow p-4">
         <h4 className="mb-3">Real-Time Chat 😤</h4>
 
-        {/* MESSAGE AREA */}
-        <div
-          style={{
-            height: "350px",
-            overflowY: "auto",
-            border: "1px solid #ddd",
-            padding: "10px",
-            borderRadius: "5px"
-          }}
-        >
+        <div style={{ height: "350px", overflowY: "auto" }}>
           {messages.map((msg, index) => (
-            <div
-              key={index}
-              className={`mb-2 ${
-                msg.senderId === userId
-                  ? "text-end"
-                  : "text-start"
-              }`}
-            >
+            <div key={index} className="mb-2">
               <span
                 className={`badge ${
                   msg.senderId === userId
@@ -148,11 +122,9 @@ function Chat() {
           <div ref={bottomRef}></div>
         </div>
 
-        {/* INPUT AREA */}
         <div className="d-flex mt-3">
           <input
             className="form-control me-2"
-            placeholder="Type message..."
             value={newMessage}
             onChange={(e) => setNewMessage(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && sendMessage()}
