@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import socket from "../socket";
@@ -33,7 +33,7 @@ function Dashboard() {
   /* =========================
      FETCH DATA
   ========================== */
-  const fetchRequests = async () => {
+  const fetchRequests = useCallback(async () => {
     try {
       const res = await axios.get(
         "hhttps://noignore.onrender.com/api/auth/pending-requests",
@@ -45,9 +45,9 @@ function Dashboard() {
     } catch (err) {
       console.log(err);
     }
-  };
+  });
 
-  const fetchFriends = async () => {
+  const fetchFriends = useCallback(async () => {
     try {
       const res = await axios.get(
         "https://noignore.onrender.com/api/auth/friends",
@@ -59,7 +59,7 @@ function Dashboard() {
     } catch (err) {
       console.log(err);
     }
-  };
+  });
 
   const acceptRequest = async (id) => {
     try {
@@ -83,7 +83,7 @@ function Dashboard() {
   useEffect(() => {
     fetchRequests();
     fetchFriends();
-  }, []);
+  }, [fetchRequests, fetchFriends]);
 
   const logout = () => {
     localStorage.removeItem("token");

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useCallback, useState } from "react";
 import axios from "axios";
 import { useParams, useNavigate } from "react-router-dom";
 import socket from "../socket";
@@ -53,7 +53,7 @@ function Chat() {
   /* =========================
      FETCH OLD MESSAGES
   ========================== */
-  const fetchMessages = async () => {
+  const fetchMessages = useCallback(async () => {
     try {
       const res = await axios.get(
         `https://noignore.onrender.com/api/auth/messages/${friendId}`,
@@ -65,11 +65,11 @@ function Chat() {
     } catch (err) {
       console.log(err);
     }
-  };
+  });
 
   useEffect(() => {
     fetchMessages();
-  }, [friendId]);
+  }, [fetchMessages]);
 
   /* =========================
      AUTO SCROLL
